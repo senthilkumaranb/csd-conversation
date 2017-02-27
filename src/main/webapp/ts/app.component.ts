@@ -26,45 +26,67 @@ import {PayloadComponent} from './payload';
   providers: [DialogService],
   selector: 'chat-app',
   template: `
-  <div id='view-change-button' class='button' (click)='togglePanel($event)'>
-    <img title='Click to Collapse' class='option full' src='../img/Chat Button.png'>
-    <img title='Click to Expand' class='option not-full' src='../img/Code Button.png'>
+	<div class="container">
+	<div class="row">
+	
+	<section id="container" >
+		<aside>
+			<div id="sidebar"  class="nav-collapse ">
+				<!-- sidebar menu start-->
+				<ul class="sidebar-menu" id="nav-accordion">
+					<p class="centered">
+						<a href="home.html"><img src="assets/img/new/home_icon.png" class="img-circle" width="60"></a>
+					</p>
+					<p class="centered">
+						<a href="profile.html"><img src="assets/img/new/support_icon.png" class="img-circle" width="60"></a>
+					</p>
+					<p class="centered">
+						<a href="profile.html"><img src="assets/img/new/manager_icon.png" class="img-circle" width="60"></a>
+					</p>
+				</ul>
+			</div>
+		</aside>
+			
+	<section id="main-content">
+	<section class="wrapper">
+
+	<div class="row">
+			
+		  <div id='view-change-button' class='button' (click)='togglePanel($event)'>
+		    <img title='Click to Collapse' class='option full' src='../img/Chat Button.png'>
+		    <img title='Click to Expand' class='option not-full' src='../img/Code Button.png'>
+		  </div>			
+		  <div id='parent' class='parentDiv' (window:resize)='onResize($event)'>
+		      <div id='scrollingChat'>
+		        <div id='segments' *ngFor='#segment of segments'>
+		          <div [class]='segment.isUser() ? "from-user" :
+		            (segment !== segments[segments.length - 1] ? "from-watson" : "from-watson-latest")'>
+		            <p class='padding' [innerHtml]='segment.getText()'></p>
+		            <div *ngIf='!segment.isUser() && segment.getCe().length>0 && segment !== segments[0]'>
+		              <span title='Click to Collapse' (click)='CeToggle($event)' style='border : none;'
+		              class='expcoll'>Collapse Results <span class='sign'>-</span></span>
+		              <div class='toggleCe'>
+		                <ce-doc *ngFor='#doc of segment.getCe()' [doc]='doc'></ce-doc>
+		              </div>
+		            </div>
+		          </div>
+		          <div class='clear'></div>
+		          <div *ngIf='segment.isUser() && segment == segments[segments.length - 1]' class='load'></div>
+		        </div>
+		      </div>
+		      <footer>
+		      <label for='textInput' class='inputOutline'>
+		        <input id='textInput' class='input responsive-column' placeholder='Type something' type='text'
+		          [(ngModel)]='question' (keydown)='keypressed($event)' style='width:100%'>
+		      </label>
+		      <div class='draw'></div>
+		    </footer>
+		  </div>
+  
+			</div>
+		</section>
+	</section>
   </div>
-  <div id='parent' class='parentDiv' (window:resize)='onResize($event)'>
-      <div id='scrollingChat'>
-        <div id='segments' *ngFor='#segment of segments'>
-          <div [class]='segment.isUser() ? "from-user" :
-            (segment !== segments[segments.length - 1] ? "from-watson" : "from-watson-latest")'>
-            <p class='padding' [innerHtml]='segment.getText()'></p>
-            <div *ngIf='!segment.isUser() && segment.getCe().length>0 && segment !== segments[0]'>
-              <span title='Click to Collapse' (click)='CeToggle($event)' style='border : none;'
-              class='expcoll'>Collapse Results <span class='sign'>-</span></span>
-              <div class='toggleCe'>
-                <ce-doc *ngFor='#doc of segment.getCe()' [doc]='doc'></ce-doc>
-              </div>
-            </div>
-          </div>
-          <div class='clear'></div>
-          <div *ngIf='segment.isUser() && segment == segments[segments.length - 1]' class='load'></div>
-        </div>
-      </div>
-      <div class='right'> <!-- Display the payload to/from Watson -->
-        <div id='payload-column' class='fixed-column content-column'>
-          <payload id='payload-request' class='payload' label='Sent to Watson' [style]='segments.length <= 2 ?
-            "display : none;" : ""' [payload]='(segments.length > 1 && segments[segments.length - 2].isUser()) ?
-            segments[segments.length - 2].getPayload() : null'></payload>
-          <payload id='payload-response' class='payload' label='Watson understands' [style]='segments.length <= 1 ?
-            "display : none;" : ""' [payload]='(segments.length > 0 && !segments[segments.length - 1].isUser()) ?
-            segments[segments.length - 1].getPayload() : null'></payload>
-        </div>
-      </div>
-      <footer>
-      <label for='textInput' class='inputOutline'>
-        <input id='textInput' class='input responsive-column' placeholder='Type something' type='text'
-          [(ngModel)]='question' (keydown)='keypressed($event)' style='width:100%'>
-      </label>
-      <div class='draw'></div>
-    </footer>
   </div>
     `
 })
